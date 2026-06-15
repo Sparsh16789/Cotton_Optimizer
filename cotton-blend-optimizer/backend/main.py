@@ -8,8 +8,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["https://cotton-frontend-zi5q.onrender.com"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
