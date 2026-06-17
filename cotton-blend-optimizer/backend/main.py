@@ -88,7 +88,7 @@ def optimize(req: OptimizeRequest):
 
     r = req_dict.get(PROP_HARMONIC)
     if r is not None:
-        row = [1 / (getattr(c, PROP_HARMONIC) or 0.0001) - 1 / r for c in cottons]
+        row = [1 / r - 1 / (getattr(c, PROP_HARMONIC) or 0.0001) for c in cottons]
         A_ub.append(row)
         b_ub.append(0)
 
