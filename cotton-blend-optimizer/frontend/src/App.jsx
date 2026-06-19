@@ -41,6 +41,13 @@ function toNum(v) {
   return v === "" || v === undefined ? null : parseFloat(v);
 }
 
+// auto-fill targets for the "Required Mixing Property" column, based on uster level
+const QUALITY_PRESETS = {
+  "5%":  { span25: 29.4, span50: 26.5, micronaire: 4.0, strength: 34.8, reflectance: 80, maturity: 0.79, short_fiber: 0.20 },
+  "25%": { span25: 28.0, span50: 25.2, micronaire: 4.2, strength: 32.5, reflectance: 78, maturity: 0.76, short_fiber: 0.23 },
+  "50%": { span25: 26.5, span50: 24.0, micronaire: 4.5, strength: 30.0, reflectance: 76, maturity: 0.73, short_fiber: 0.26 },
+};
+
 export default function App() {
   const [screen, setScreen] = useState(1);
 
@@ -67,11 +74,30 @@ export default function App() {
   const span25Label = testMode === "HVI" ? "Upper half mean length (mm)" : "2.5% Span Length (mm)";
   const span50Label = testMode === "HVI" ? "Mean Length (mm)" : "50% Span Length (mm)";
 
+  function applyPreset(level) {
+    const preset = QUALITY_PRESETS[level];
+    if (preset) {
+      setRequirements({
+        span25: preset.span25, span50: preset.span50, micronaire: preset.micronaire,
+        strength: preset.strength, reflectance: preset.reflectance,
+        maturity: preset.maturity, short_fiber: preset.short_fiber,
+      });
+    }
+  }
+
+  function handleUsterChange(level) {
+    setUsterLevel(level);
+    applyPreset(level);
+  }
+
   function goToScreen2() {
     const n = parseInt(numCottons);
     const arr = [];
     for (let i = 0; i < n; i++) arr.push(cottons[i] || blankCotton());
     setCottons(arr);
+    if (requirements.span25 === "" && requirements.span50 === "") {
+      applyPreset(usterLevel);
+    }
     setScreen(2);
   }
 
@@ -160,7 +186,7 @@ export default function App() {
 
           <div style={{ marginBottom: 8 }}>
             <label>Target yarn uster level*<Help topic="uster" />: </label>
-            <select value={usterLevel} onChange={e => setUsterLevel(e.target.value)}>
+            <select value={usterLevel} onChange={e => handleUsterChange(e.target.value)}>
               <option>5%</option><option>25%</option><option>50%</option>
             </select>
           </div>
